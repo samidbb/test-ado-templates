@@ -1,0 +1,11 @@
+parameters:
+- name: 'vmImage'
+  default: 'ubuntu-latest'
+  type: string
+
+jobs:
+- job: Build
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+  - script: echo "testing from Github"
