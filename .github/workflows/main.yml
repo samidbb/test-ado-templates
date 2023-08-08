@@ -6,26 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # checkov:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #     with:
-  #       fetch-depth: 0
-
-  #   - run: docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf bridgecrew/checkov --directory /tf --soft-fail
-
-  # build:
-  #   name: 'Build Docker Image'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Build Docker Image
-  #       working-directory: docker
-  #       run: docker build -t bridgecrew/checkov:local .
-
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
@@ -38,54 +18,52 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v2
       - name: Terraform Plan
-        id: plan
-        shell: bash
         run: |
           cd terraform
           terraform init
           terraform plan -out=tfplan.bin
           terraform show -json tfplan.bin | jq '.' > tfplan.json
-          cat tfplan.json
 
-      # - name: Install checkov
+
+      # # - name: Install checkov
+      # #   run: |
+      # #     pip3 install checkov
+      # #     # check checkov is installed
+      # #     if [[ $(pip3 list | grep -i "checkov") =~ "checkov" ]]; then
+      # #       echo "checkov is installed"
+      # #     else
+      # #       echo "checkov is not installed"
+      # #       echo "Install checkov."
+      # #       exit 1
+      # #     fi
+
+      # # - name: Checkov GitHub Action
+      # #   uses: bridgecrewio/checkov-action@v12
+      # - name: check
+      #   shell: bash
       #   run: |
-      #     pip3 install checkov
-      #     # check checkov is installed
-      #     if [[ $(pip3 list | grep -i "checkov") =~ "checkov" ]]; then
-      #       echo "checkov is installed"
-      #     else
-      #       echo "checkov is not installed"
-      #       echo "Install checkov."
-      #       exit 1
-      #     fi
-
-      # - name: Checkov GitHub Action
-      #   uses: bridgecrewio/checkov-action@v12
-      - name: check
-        shell: bash
-        run: |
-          ls -la tftest/
-          echo "===================="
-          ls -la tftest/policies
-      - name: Run test checkov
-        shell: bash
-        run: |
-          # docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
-          checkov -f tftest/tfplan.json --external-checks-dir tftest/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail --output sarif > results.sarif
+      #     ls -la tftest/
+      #     echo "===================="
+      #     ls -la tftest/policies
+      # - name: Run test checkov
+      #   shell: bash
+      #   run: |
+      #     # docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+      #     checkov -f tftest/tfplan.json --external-checks-dir tftest/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail --output sarif > results.sarif
 
 
 
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
+      # - name: Upload SARIF file
+      #   uses: github/codeql-action/upload-sarif@v2
 
-        # Results are generated only on a success or failure
-        # this is required since GitHub by default won't run the next step
-        # when the previous one has failed. Security checks that do not pass will 'fail'.
-        # An alternative is to add `continue-on-error: true` to the previous step
-        # Or 'soft_fail: true' to checkov.
-        if: success() || failure()
-        with:
-          sarif_file: results.sarif
+      #   # Results are generated only on a success or failure
+      #   # this is required since GitHub by default won't run the next step
+      #   # when the previous one has failed. Security checks that do not pass will 'fail'.
+      #   # An alternative is to add `continue-on-error: true` to the previous step
+      #   # Or 'soft_fail: true' to checkov.
+      #   if: success() || failure()
+      #   with:
+      #     sarif_file: results.sarif
       # - uses: hashicorp/setup-terraform@v2
 
       # - name: Terraform Format
