@@ -43,7 +43,7 @@ jobs:
           cd terraform
           terraform init
           terraform plan -out tfplan
-          terraform show -json tfplan > tfplan.json
+          terraform show -json tfplan | jq '.' > tfplan.json
 
           echo "ls what in the tf folder"
           ls -la ../tf
