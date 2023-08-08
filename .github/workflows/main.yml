@@ -1,0 +1,13 @@
+name: Run TF policy test
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    - name: Get TF plan
+      
+
+   
+    
+      
+  
