@@ -47,4 +47,4 @@ jobs:
         echo "running checkov"
         checkov \
           -f tfplan.json --external-checks-dir checkov/policies \
-          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail --support
