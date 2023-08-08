@@ -1,5 +1,8 @@
 name: Run TF policy test
 on:
+  push:
+    branches: [ main ]
+
   workflow_dispatch:
 
 jobs:
@@ -7,17 +10,17 @@ jobs:
     permissions: write-all
 #      contents: read # for actions/checkout to fetch code
 #      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-#      actions: read  
+#      actions: read
     runs-on: ubuntu-latest
     name: Run TF plan
     steps:
     - run: |
-        jq --version      
+        jq --version
     - uses: actions/checkout@v3
     - uses: hashicorp/setup-terraform@v2
     - name: Terraform Plan
       id: plan
-      run: | 
+      run: |
         terraform init
         terraform plan -out=tfplan.bin
         terraform show -json tfplan.bin > tfplan.json
@@ -34,12 +37,11 @@ jobs:
           echo "checkov is not installed"
           echo "Install checkov."
           exit 1
-        fi        
-      
+        fi
+
     - name: Terraform policy validation
       run: |
-        ls -a 
+        ls terraform/
         checkov \
           -f terraform/tfplan.json --external-checks-dir checkov/policies \
-          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail # -o sarif > reports/results.sarif
-    
+          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
