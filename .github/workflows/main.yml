@@ -39,14 +39,14 @@ jobs:
           terraform plan -out tfplan
           terraform show -json tfplan > tfplan.json
 
-          echo ${{ env.GITHUB_WORKSPACE }}
+          ls ${{ env.RUNNER_WORKSPACE }}
           echo "==================="
           printenv
 
-          # docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf -w /tf bridgecrew/checkov -f tfplan.json --external-checks-dir ../checkov/policies --soft-fail
+          docker run --volume "${{ env.RUNNER_WORKSPACE }}":/tf -w /tf bridgecrew/checkov -f terraform/tfplan.json --external-checks-dir checkov/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
 
-
-
+# RUNNER_WORKSPACE=/home/runner/work/test-ado-templates
+# RUNNER_WORKSPACE
 
 # jobs:
 #   terraform:
