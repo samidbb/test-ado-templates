@@ -33,26 +33,29 @@ jobs:
         run: terraform init
 
       - name: what is the workspace
-        run: ls ${{ env.RUNNER_WORKSPACE }}
+        run: |
+          mkdir tf
+          cp checkov/policies ./tf/policies -r
 
       - name: Terraform Plan and validate
         # working-directory: terraform
         run: |
           cd terraform
-          echo $PWD
-          echo "==================="
           terraform init
           terraform plan -out tfplan
           terraform show -json tfplan > tfplan.json
 
-          echo "==================="
-          echo ${{ env.RUNNER_WORKSPACE }}
-          echo "==================="
-          ls ${{ env.RUNNER_WORKSPACE }}
-          echo "==================="
-          printenv
+          echo "ls what in the tf folder"
+          ls -la ../tf
+          echo "copy tfplan.json to tf folder"
+          cp tfplan.json ../tf/tfplan.json
 
-          docker run --volume "${{ env.RUNNER_WORKSPACE }}":/tf -w /tf bridgecrew/checkov -f terraform/tfplan.json --external-checks-dir checkov/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+      - name: Run checkov
+        run: |
+          echo "ls what in the tf folder"
+          ls tf
+          echo "run checkov"
+          docker run --volume tf/:/tf -w /tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
 
 # RUNNER_WORKSPACE=/home/runner/work/test-ado-templates
 # RUNNER_WORKSPACE
