@@ -27,6 +27,7 @@ jobs:
         run: docker build -t bridgecrew/checkov:local .
 
   terraform:
+    needs: build
     name: 'Terraform'
     runs-on: ubuntu-latest
     container:
