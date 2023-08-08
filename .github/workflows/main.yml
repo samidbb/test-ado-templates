@@ -6,45 +6,84 @@ on:
   workflow_dispatch:
 
 jobs:
-  terraform:
-    permissions: write-all
-#      contents: read # for actions/checkout to fetch code
-#      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-#      actions: read
+  checkov:
     runs-on: ubuntu-latest
-    name: Run TF plan
+
     steps:
-    - run: |
-        jq --version
-    - uses: actions/checkout@v3
-    - uses: hashicorp/setup-terraform@v2
-    - name: Terraform Plan
-      id: plan
-      run: |
-        terraform init
-        terraform plan -out=tfplan.bin
-        terraform show -json tfplan.bin > tfplan.json
-        cat tfplan.json
-      working-directory: terraform
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
-    - name: Install checkov
-      run: |
-        pip3 install checkov
-        # check checkov is installed
-        if [[ $(pip3 list | grep -i "checkov") =~ "checkov" ]]; then
-          echo "checkov is installed"
-        else
-          echo "checkov is not installed"
-          echo "Install checkov."
-          exit 1
-        fi
+    - run: docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf bridgecrew/checkov --directory /tf --soft-fail
 
-    - name: Terraform policy validation
-      run: |
-        ls terraform/
-        cp terraform/tfplan.json ./tfplan.json
-        cat tfplan.json
-        echo "running checkov"
-        checkov \
-          -f tfplan.json --external-checks-dir checkov/policies \
-          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*'
+  terraform:
+    needs: checkov
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Format
+        run: terraform fmt
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan and validate
+        working-directory: terraform
+        run: |
+          terraform plan -out tfplan
+          terraform show -json tfplan > tfplan.json
+          docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf bridgecrew/checkov -f tfplan.json --soft-fail
+
+
+
+
+# jobs:
+#   terraform:
+#     permissions: write-all
+# #      contents: read # for actions/checkout to fetch code
+# #      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+# #      actions: read
+#     runs-on: ubuntu-latest
+#     name: Run TF plan
+#     steps:
+#     - run: |
+#         jq --version
+#     - uses: actions/checkout@v3
+#     - uses: hashicorp/setup-terraform@v2
+#     - name: Terraform Plan
+#       id: plan
+#       run: |
+#         terraform init
+#         terraform plan -out=tfplan.bin
+#         terraform show -json tfplan.bin > tfplan.json
+#         cat tfplan.json
+#       working-directory: terraform
+
+#     - name: Install checkov
+#       run: |
+#         pip3 install checkov
+#         # check checkov is installed
+#         if [[ $(pip3 list | grep -i "checkov") =~ "checkov" ]]; then
+#           echo "checkov is installed"
+#         else
+#           echo "checkov is not installed"
+#           echo "Install checkov."
+#           exit 1
+#         fi
+
+#     - name: Terraform policy validation
+#       working-directory: terraform
+#       run: |
+#         ls terraform/
+#         cp terraform/tfplan.json ./tfplan.json
+#         cat tfplan.json
+#         echo "running checkov"
+#         checkov \
+#           -f tfplan.json --external-checks-dir checkov/policies \
+#           -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*'
