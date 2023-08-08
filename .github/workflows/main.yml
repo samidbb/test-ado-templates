@@ -25,11 +25,12 @@ jobs:
           terraform show -json tfplan.bin | jq '.' > tfplan.json
 
 
-      # - name: Run test checkov
-      #   shell: bash
-      #   run: |
-      #     # docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
-      #     checkov -f tftest/tfplan.json --external-checks-dir tftest/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail --output sarif > results.sarif
+      - name: Run test checkov
+        shell: bash
+        run: |
+          cat tfplan.json
+          # docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+          checkov -f tftest/tfplan.json --external-checks-dir tftest/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail --output sarif > results.sarif
 
       # # - name: Install checkov
       # #   run: |
