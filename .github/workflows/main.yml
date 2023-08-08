@@ -4,10 +4,10 @@ on:
 
 jobs:
   terraform:
-    - name: Get TF plan
-      
-
-   
+    name: Run TF plan
+    steps:
+    - uses: hashicorp/setup-terraform@v2
+    
     
       
   
