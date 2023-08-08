@@ -12,6 +12,7 @@ jobs:
     - name: Terraform Plan
       id: plan
       run: | 
+        terraform init
         terraform plan -out=tfplan.bin
         terraform show -json tfplan.bin | jq '.' > $(Build.BinariesDirectory)/tfplan.json        
       working-directory: terraform
