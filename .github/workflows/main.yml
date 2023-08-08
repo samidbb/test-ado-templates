@@ -32,7 +32,7 @@ jobs:
           cd terraform
           terraform init
           terraform plan -out=tfplan.bin
-          terraform show -json tfplan.bin | jq '.' > tfplan.json
+          terraform show -json tfplan.bin | jq -R '.' > tfplan.json
           cat tfplan.json
 
       - name: Install checkov
