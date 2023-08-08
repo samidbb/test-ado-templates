@@ -24,6 +24,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - uses: hashicorp/setup-terraform@v2
+      - name: Terraform Plan
+        id: plan
+        run: |
+          cd terraform
+          terraform init
+          terraform plan -out=tfplan.bin
+          terraform show -json tfplan.bin | jq '.' > tfplan.json
+          cat tfplan.json
+
       - name: Install checkov
         run: |
           pip3 install checkov
