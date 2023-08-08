@@ -39,6 +39,6 @@ jobs:
       run: |
         ls -a 
         checkov \
-          -f tfplan.json --external-checks-dir checkov/policies \
-          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail -o sarif > reports/results.sarif
+          -f terraform/tfplan.json --external-checks-dir checkov/policies \
+          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail # -o sarif > reports/results.sarif
     
