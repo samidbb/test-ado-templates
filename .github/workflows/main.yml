@@ -1,10 +1,10 @@
 name: Run TF policy test
 on:
   workflow_dispatch:
-runs-on: ubuntu-latest
 
 jobs:
   terraform:
+    runs-on: ubuntu-latest
     name: Run TF plan
     steps:
     - uses: hashicorp/setup-terraform@v2
