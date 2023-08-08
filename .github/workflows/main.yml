@@ -32,6 +32,9 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: what is the workspace
+        run: ls ${{ env.RUNNER_WORKSPACE }}
+
       - name: Terraform Plan and validate
         working-directory: terraform
         run: |
@@ -39,6 +42,9 @@ jobs:
           terraform plan -out tfplan
           terraform show -json tfplan > tfplan.json
 
+          echo "==================="
+          echo ${{ env.RUNNER_WORKSPACE }}
+          echo "==================="
           ls ${{ env.RUNNER_WORKSPACE }}
           echo "==================="
           printenv
