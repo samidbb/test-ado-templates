@@ -20,9 +20,15 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform
+          ls -la
+
           terraform init
-          terraform plan -out=tfplan.bin
-          terraform show -json tfplan.bin # | jq '.' > tfplan.json
+
+
+
+
+      # terraform plan -out=tfplan.bin
+      # terraform show -json tfplan.bin # | jq '.' > tfplan.json
 
 
       # # - name: Install checkov
