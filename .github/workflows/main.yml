@@ -55,7 +55,7 @@ jobs:
           echo "ls what in the tf folder"
           ls tf
           echo "run checkov"
-          docker run --volume tf/:/tf -w /tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+          docker run -v tf:/tf -w /tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
 
 # RUNNER_WORKSPACE=/home/runner/work/test-ado-templates
 # RUNNER_WORKSPACE
