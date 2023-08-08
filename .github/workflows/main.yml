@@ -26,8 +26,10 @@ jobs:
 
       - name: Run test checkov
         run: |
-          docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
-
+          # docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+          checkov \
+            -f $PWD/tftest/tfplan.json --external-checks-dir $PWD/tftest/policies \
+            -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
       # - uses: hashicorp/setup-terraform@v2
 
       # - name: Terraform Format
