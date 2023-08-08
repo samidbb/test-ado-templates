@@ -39,8 +39,11 @@ jobs:
           terraform plan -out tfplan
           terraform show -json tfplan > tfplan.json
 
-          ls ${{ env.GITHUB_WORKSPACE }}
-          # docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf -w /tf bridgecrew/checkov -f tfplan.json --soft-fail
+          echo ${{ env.GITHUB_WORKSPACE }}
+          echo "==================="
+          printenv
+
+          # docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf -w /tf bridgecrew/checkov -f tfplan.json --external-checks-dir ../checkov/policies --soft-fail
 
 
 
