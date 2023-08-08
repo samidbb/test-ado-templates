@@ -1,6 +1,7 @@
 name: Run TF policy test
 on:
   workflow_dispatch:
+runs-on: ubuntu-latest
 
 jobs:
   terraform:
