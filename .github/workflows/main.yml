@@ -22,32 +22,23 @@ jobs:
         terraform plan -out=tfplan.bin
         terraform show -json tfplan.bin > tfplan.json        
       working-directory: terraform
+
+    - name: Install checkov
+      run: |
+        pip3 install checkov
+        # check checkov is installed
+        if [[ $(pip3 list | grep -i "checkov") =~ "checkov" ]]; then
+          echo "checkov is installed"
+        else
+          echo "checkov is not installed"
+          echo "Install checkov."
+          exit 1
+        fi        
       
     - name: Terraform policy validation
       run: |
         ls -a 
-
-    - name: Run Checkov action
-      id: checkov
-      uses: bridgecrewio/checkov-action@master
-      with:
-        directory: checkov/policies/
-        file: tfplan.json # optional: provide the path for resource to be scanned. This will override the directory if both are provided.
-        check: CUSTOM_TAGS_POLICY # optional: run only a specific check_id. can be comma separated list
-        skip_check: '*_AWS_*' # optional: skip a specific check_id. can be comma separated list
-        quiet: true # optional: display only failed checks
-        soft_fail: true # optional: do not return an error code if there are failed checks
-        framework: terraform # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
-        output_format: sarif # optional: the output format, one of: cli, json, junitxml, github_failed_only, or sarif. Default: sarif
-        output_file_path: reports/results.sarif # folder and name of results file
-        #download_external_modules: true # optional: download external terraform modules from public git repositories and terraform registry
-        #repo_root_for_plan_enrichment: example/ #optional: Directory containing the hcl code used to generate a given terraform plan file. Use together with `file`
-        #var_file: ./testdir/gocd.yaml # optional: variable files to load in addition to the default files. Currently only supported for source Terraform and Helm chart scans.
-        log_level: DEBUG # optional: set log level. Default WARNING
-        #config_file: path/this_file
-        #baseline: cloudformation/.checkov.baseline # optional: Path to a generated baseline file. Will only report results not in the baseline.
-        #container_user: 1000 # optional: Define what UID and / or what GID to run the container under to prevent permission issues
-        #use_enforcement_rules: true # opt    
+        checkov \
+          -f tfplan.json --external-checks-dir checkov/policies \
+          -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail -o sarif > reports/results.sarif
     
-      
-  
