@@ -24,38 +24,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Format
-        run: terraform fmt
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: what is the workspace
+      - name: Run test checkov
         run: |
-          mkdir tf
-          cp checkov/policies ./tf/policies -r
+          docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
 
-      - name: Terraform Plan and validate
-        # working-directory: terraform
-        run: |
-          cd terraform
-          terraform init
-          terraform plan -out tfplan
-          terraform show -json tfplan | jq '.' > tfplan.json
+      # - uses: hashicorp/setup-terraform@v2
 
-          echo "ls what in the tf folder"
-          ls -la ../tf
-          echo "copy tfplan.json to tf folder"
-          cp tfplan.json ../tf/tfplan.json
+      # - name: Terraform Format
+      #   run: terraform fmt
 
-      - name: Run checkov
-        run: |
-          echo "ls what in the tf folder"
-          ls tf
-          echo "run checkov"
-          docker run -v $PWD/tf:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+      # - name: Terraform Init
+      #   run: terraform init
+
+      # - name: what is the workspace
+      #   run: |
+      #     mkdir tf
+      #     cp checkov/policies ./tf/policies -r
+
+      # - name: Terraform Plan and validate
+      #   # working-directory: terraform
+      #   run: |
+      #     cd terraform
+      #     terraform init
+      #     terraform plan -out tfplan
+      #     terraform show -json tfplan | jq '.' > tfplan.json
+
+      #     echo "ls what in the tf folder"
+      #     ls -la ../tf
+      #     echo "copy tfplan.json to tf folder"
+      #     cp tfplan.json ../tf/tfplan.json
+
+      # - name: Run checkov
+      #   run: |
+      #     echo "ls what in the tf folder"
+      #     ls tf
+      #     echo "run checkov"
+      #     docker run -v $PWD/tf:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
+
+
+      #     docker run -v $PWD/tftest:/tf bridgecrew/checkov -f tf/tfplan.json --external-checks-dir tf/policies -c CUSTOM_TAGS_POLICY --skip-check '*_AWS_*' --soft-fail
 
 # RUNNER_WORKSPACE=/home/runner/work/test-ado-templates
 # RUNNER_WORKSPACE

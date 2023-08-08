@@ -1,0 +1,19 @@
+---
+metadata:
+  name: "Resources should have env tag with value prod or dev"
+  id: "CUSTOM_TAGS_POLICY"
+  category: "Best Practices"
+  guideline: "https://wiki.dfds.cloud/en/teams/tagging_guide"
+definition:
+  # cond_type: "attribute"
+  # resource_types: "all"
+  # attribute: "tags.dfds.env"
+  # operator: "exists"
+  # and:
+  cond_type: "attribute"
+  resource_types: "all"
+  attribute: "tags.dfds.env"
+  operator: "subset"
+  value:
+    - prod
+    - dev
