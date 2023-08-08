@@ -19,6 +19,8 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    container:
+      image: bridgecrew/checkov
     permissions: write-all
     steps:
       - name: Checkout
@@ -32,20 +34,20 @@ jobs:
           cd terraform
           terraform init
           terraform plan -out=tfplan.bin
-          terraform show -json tfplan.bin | jq -R '.' > tfplan.json
+          terraform show -json tfplan.bin | jq '.' > tfplan.json
           cat tfplan.json
 
-      - name: Install checkov
-        run: |
-          pip3 install checkov
-          # check checkov is installed
-          if [[ $(pip3 list | grep -i "checkov") =~ "checkov" ]]; then
-            echo "checkov is installed"
-          else
-            echo "checkov is not installed"
-            echo "Install checkov."
-            exit 1
-          fi
+      # - name: Install checkov
+      #   run: |
+      #     pip3 install checkov
+      #     # check checkov is installed
+      #     if [[ $(pip3 list | grep -i "checkov") =~ "checkov" ]]; then
+      #       echo "checkov is installed"
+      #     else
+      #       echo "checkov is not installed"
+      #       echo "Install checkov."
+      #       exit 1
+      #     fi
 
       # - name: Checkov GitHub Action
       #   uses: bridgecrewio/checkov-action@v12
