@@ -18,7 +18,7 @@ jobs:
       run: | 
         terraform init
         terraform plan -out=tfplan.bin
-        terraform show -json tfplan.bin | jq '.' > $(Build.BinariesDirectory)/tfplan.json        
+        terraform show -json tfplan.bin | jq '.' > tfplan.json        
       working-directory: terraform
       
     - name: Terraform policy validation
