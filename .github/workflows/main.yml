@@ -20,7 +20,8 @@ jobs:
       run: | 
         terraform init
         terraform plan -out=tfplan.bin
-        terraform show -json tfplan.bin > tfplan.json        
+        terraform show -json tfplan.bin > tfplan.json
+        cat tfplan.json
       working-directory: terraform
 
     - name: Install checkov
