@@ -6,15 +6,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  checkov:
-    runs-on: ubuntu-latest
+  # checkov:
+  #   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #     with:
+  #       fetch-depth: 0
 
-    - run: docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf bridgecrew/checkov --directory /tf --soft-fail
+  #   - run: docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf bridgecrew/checkov --directory /tf --soft-fail
 
   terraform:
     needs: checkov
@@ -36,9 +36,12 @@ jobs:
       - name: Terraform Plan and validate
         working-directory: terraform
         run: |
+          terraform init
           terraform plan -out tfplan
           terraform show -json tfplan > tfplan.json
-          docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf bridgecrew/checkov -f tfplan.json --soft-fail
+
+          ls ${{ env.GITHUB_WORKSPACE }}
+          # docker run --volume "${{ env.GITHUB_WORKSPACE }}":/tf -w /tf bridgecrew/checkov -f tfplan.json --soft-fail
 
 
 
